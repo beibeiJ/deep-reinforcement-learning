@@ -53,3 +53,17 @@ You need only select the environment that matches your operating system:
 Then, place the file in the `p1_navigation/` folder in the DRLND GitHub repository, and unzip (or decompress) the file.  Next, open `Navigation_Pixels.ipynb` and follow the instructions to learn how to use the Python API to control the agent.
 
 (_For AWS_) If you'd like to train the agent on AWS, you must follow the instructions to [set up X Server](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md), and then download the environment for the **Linux** operating system above.
+
+### Solutions
+#### Description
+- dqn_agent.py: code for the agent used in the environment
+- model.py: code containing the Q-Network used as the function approximator by the agent
+- prioritized_memory.py and SumTree.py: code containing the Prioritized experience reply implementation with SumTree 
+- *.pth: saved model weights for different models
+- Navigation_ipynb: explore the unity environment
+- Navigation_solution.ipynb: notebook containing the solution, the training precess and the results
+- Navigation_Pixels.ipynb: notebook containing the code for the pixel-action problem (see above optional challenge)
+- Report.md
+
+
+

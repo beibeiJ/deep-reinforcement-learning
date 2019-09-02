@@ -107,6 +107,7 @@ class Agent():
         ======
             experiences (Tuple[torch.Tensor]): tuple of (s, a, r, s', done) tuples 
             gamma (float): discount factor
+            beta (float): reliance of importance sampling weight on prioritization
         """
         if self.prioritized_reply:
             # Beta will reach 1 after 25,000 training steps (~325 episodes)

@@ -48,7 +48,7 @@ class duelingDQNnetwork(nn.Module):
 
         self.fc1_val = nn.Linear(state_size, fc1_units)
         self.fc2_val = nn.Linear(fc1_units, fc2_units)
-        self.fc3_val = nn.Linear(fc2_units, action_size)
+        self.fc3_val = nn.Linear(fc2_units, 1)
 
         self.fc1_adv = nn.Linear(state_size, fc1_units)
         self.fc2_adv = nn.Linear(fc1_units, fc2_units)

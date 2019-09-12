@@ -61,7 +61,7 @@ Then, place the file in the `p1_navigation/` folder in the DRLND GitHub reposito
 - prioritized_memory.py and SumTree.py: code containing the Prioritized experience reply implementation with SumTree 
 - *.pth: saved model weights for different models
 - Navigation_ipynb: explore the unity environment
-- Navigation_solution.ipynb: notebook containing the solution, the training precess and the results
+- Navigation_solution.ipynb: notebook containing the solution, the training processes and the results
 - Navigation_Pixels.ipynb: notebook containing the code for the pixel-action problem (see above optional challenge)
 - Report/Report.md: Markdown file converted from Navigation_solution.ipynb
 

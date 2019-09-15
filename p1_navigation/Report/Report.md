@@ -148,11 +148,20 @@ env_info = env.reset(train_mode=True)[brain_name]
 ##### Basic
 The Deep Q Network (DQN) which has been learned recently is a good solution for this project. As the instruction said, adjusting a little bit of the codes from the DQN project is enough. The below implementation codes are adapted from https://github.com/udacity/deep-reinforcement-learning/tree/master/dqn/solution 
 
+What is DQN? To understand it, first we should introduce Q-learning, which is an off-policy algorithm to learn the action value function. It is often represented as Q(s, a), where s is the current state and a is the taken action (see below equation).
+
+$${\displaystyle Q^{new}(s_{t},a_{t})\leftarrow \underbrace {Q(s_{t},a_{t})} _{\text{old value}} + \underbrace {\alpha } _{\text{learning rate}}\cdot \overbrace {{\bigg (}\underbrace {r_{t}} _{\text{reward}}+\underbrace {\gamma } _{\text{discount factor}}\cdot \underbrace {\max _{a}Q(s_{t+1},a)} _{\text{estimate of optimal future value}} - \underbrace {Q(s_{t},a_{t})} _{\text{old value}}{\bigg )}} ^{\text{Temporal Difference}} }$$
+
+As the equation shows, in general, the idea of Q-learning is to learn a optimal policy, which maximizes the expected value of the total reward over any and all successive steps. All the values are stored in a table which is called Q-table. Unlike Q-learning, DQN uses deep neural network to get the action value. The main features of DQN are the **fixed Q target** and **experience replay buffer**. 
+- The **fixed Q target** refers to that there are two neural networks with same network structures: one local network used to predict the expected Q value and one target network to predict the target Q value. Fixing the parameters of the target network and update them less frequently than the local network enables the stable convergence of DQN agent. 
+- The **experience reply buffer** refers to learn from the previous experience (memory). We set a Reply buffer with fixed size (BUFFER_SIZE) and stored the experiences in the buffer. When updating the parameters, we sample a few (batch_size) memory from the buffer. In this way, we can break the sequential nature of experiences and stabilize the learning algorithm.
+
 #### Extended methods
-Meanwhile, the course also introduced  
-- dueling DQN which has two outputs from the neural network (value and advantage), DQN only with value. (https://arxiv.org/pdf/1511.06581.pdf)
-- double DQN which use one network to choose the best action and the other to evaluate that action. (https://arxiv.org/pdf/1509.06461.pdf)
-- prioritized experience reply which selects the sample according to the priorities. (https://arxiv.org/pdf/1511.05952.pdf)
+Meanwhile, the course also introduced some other algorithms to improve the original DQN algorithm. Double DQN and dueling DQN are used to avoid neural network be overoptimistic. Prioritized experience reply is for extracting learning samples more efficiently.
+- **double DQN** use one network to choose the best action and the other to evaluate that action (https://arxiv.org/pdf/1509.06461.pdf). The idea is that in case one target Q network is not enough to make an accurate approximation, double DQN suggests to find the best action (using local network) then evaluate the action (using target network). 
+- **dueling DQN** which has two outputs (state value and advantage values) from the neural network (value and advantage) while DQN only have one output (Q values) (https://arxiv.org/pdf/1511.06581.pdf). The desired Q values are the sum of state value and the difference between advantage values and average of the advantage values. Why two outputs? This is because the single output from DQN could lead to unnecessarily estimating the values of all the actions for the states. The dueling architecture can learn which states are (or are not) valuable, without having to learn the effect of each action for each state. This is particularly useful in states where its actions do not affect the environment in any relevant way. 
+
+- **prioritized experience reply** which selects the sample according to the priorities (https://arxiv.org/pdf/1511.05952.pdf). Samples drawn from the buffer are fed into the DQN algorithm before getting priorities based on the magnitude of TD error. There are two additional hyperparameters $\alpha$ and $\beta$ for controlling how much prioritized experience replay affects the sampling distribution and network parameter updates.
 
 Initially, only DQN solution was implemented but there are many implementation and comparison of the above methods. It would be interesting to try them for Banana-Navigation and see the different performance.
 
@@ -383,7 +392,7 @@ for method, scores in s.items():
 
 
 
-![png](output_20_1.png)
+![png](output_22_1.png)
 
 
     
@@ -393,7 +402,7 @@ for method, scores in s.items():
 
 
 
-![png](output_20_3.png)
+![png](output_22_3.png)
 
 
     
@@ -403,7 +412,7 @@ for method, scores in s.items():
 
 
 
-![png](output_20_5.png)
+![png](output_22_5.png)
 
 
     
@@ -413,7 +422,7 @@ for method, scores in s.items():
 
 
 
-![png](output_20_7.png)
+![png](output_22_7.png)
 
 
     
@@ -423,7 +432,7 @@ for method, scores in s.items():
 
 
 
-![png](output_20_9.png)
+![png](output_22_9.png)
 
 
     
@@ -433,7 +442,7 @@ for method, scores in s.items():
 
 
 
-![png](output_20_11.png)
+![png](output_22_11.png)
 
 
     
@@ -443,7 +452,7 @@ for method, scores in s.items():
 
 
 
-![png](output_20_13.png)
+![png](output_22_13.png)
 
 
     
@@ -453,7 +462,7 @@ for method, scores in s.items():
 
 
 
-![png](output_20_15.png)
+![png](output_22_15.png)
 
 
     
@@ -475,7 +484,7 @@ plt.show()
 ```
 
 
-![png](output_21_0.png)
+![png](output_23_0.png)
 
 
 When finished, you can close the environment.

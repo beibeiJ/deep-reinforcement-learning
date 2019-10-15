@@ -3,7 +3,7 @@ import numpy as np
 class SumTree:
     """
     Leaf nodes hold experiences and intermediate nodes store experience priority sums.
-    Get from https://github.com/austinsilveria/Banana-Collection-DQN/blob/master/Banana_DoubleDQN_PER.py which was adjusted from original source: https://jaromiru.com/2016/11/07/lets-make-a-dqn-double-learning-and-prioritized-experience-replay/
+    Adjusted from https://github.com/austinsilveria/Banana-Collection-DQN/blob/master/Banana_DoubleDQN_PER.py which was adjusted from original source: https://jaromiru.com/2016/11/07/lets-make-a-dqn-double-learning-and-prioritized-experience-replay/
 
     """
 

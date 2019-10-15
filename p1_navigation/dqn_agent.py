@@ -72,7 +72,6 @@ class Agent():
         if self.t_step == 0:
             # If enough samples are available in memory, get random subset and learn
             if len(self.memory) > BATCH_SIZE:
-                experiences = self.memory.sample()
                 if self.prioritized_reply:
                     experiences = self.memory.sample()
                     self.learn(experiences, GAMMA, BETA)

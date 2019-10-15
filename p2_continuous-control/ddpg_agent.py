@@ -4,6 +4,7 @@ import copy
 from collections import namedtuple, deque
 
 from model import Actor, Critic
+from prioritized_memory import PreReplayBuffer
 
 import torch
 import torch.nn.functional as F
@@ -14,26 +15,33 @@ BATCH_SIZE = 128        # minibatch size
 GAMMA = 0.99            # discount factor
 TAU = 1e-3              # for soft update of target parameters
 LR_ACTOR = 1e-4         # learning rate of the actor 
-LR_CRITIC = 1e-3        # learning rate of the critic
-WEIGHT_DECAY = 0        # L2 weight decay
+LR_CRITIC = 1e-4        # learning rate of the critic
+WEIGHT_DECAY = 1e-4   # L2 weight decay
+ALPHA = 0.6             # reliance of sampling on prioritization
+BETA = 0.4              # reliance of importance sampling weight on prioritization
+
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class Agent():
     """Interacts with and learns from the environment."""
     
-    def __init__(self, state_size, action_size, random_seed):
+    def __init__(self, n_agents, state_size, action_size, random_seed, prioritized_reply = False):
         """Initialize an Agent object.
         
         Params
         ======
+            n_agents (int): number of agents
             state_size (int): dimension of each state
             action_size (int): dimension of each action
             random_seed (int): random seed
+            prioritized_reply (bool): True or False for using prioritized reply buffer, default is False
         """
+        self.n_agents = n_agents
         self.state_size = state_size
         self.action_size = action_size
         self.seed = random.seed(random_seed)
+        self.prioritized_reply = prioritized_reply
 
         # Actor Network (w/ Target Network)
         self.actor_local = Actor(state_size, action_size, random_seed).to(device)
@@ -49,17 +57,28 @@ class Agent():
         self.noise = OUNoise(action_size, random_seed)
 
         # Replay memory
-        self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed)
-    
+        if self.prioritized_reply:
+            self.memory = PreReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed, ALPHA)
+            # Initialize learning step for updating beta
+            self.learn_step = 0
+        else:
+            self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed)
+
     def step(self, state, action, reward, next_state, done):
         """Save experience in replay memory, and use random sample from buffer to learn."""
         # Save experience / reward
-        self.memory.add(state, action, reward, next_state, done)
+        # self.memory.add(state, action, reward, next_state, done)
+        for i in range(self.n_agents):
+            self.memory.add(state[i], action[i], reward[i], next_state[i], done[i])
 
         # Learn, if enough samples are available in memory
         if len(self.memory) > BATCH_SIZE:
-            experiences = self.memory.sample()
-            self.learn(experiences, GAMMA)
+            if self.prioritized_reply:
+                experiences = self.memory.sample()
+                self.learn(experiences, GAMMA, BETA)
+            else:
+                experiences = self.memory.sample()
+                self.learn(experiences, GAMMA)
 
     def act(self, state, add_noise=True):
         """Returns actions for given state as per current policy."""
@@ -69,13 +88,13 @@ class Agent():
             action = self.actor_local(state).cpu().data.numpy()
         self.actor_local.train()
         if add_noise:
-            action += self.noise.sample()
+            action += [self.noise.sample() for _ in range(self.n_agents)]
         return np.clip(action, -1, 1)
 
     def reset(self):
         self.noise.reset()
 
-    def learn(self, experiences, gamma):
+    def learn(self, experiences, gamma, beta=None):
         """Update policy and value parameters using given batch of experience tuples.
         Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
         where:
@@ -86,8 +105,16 @@ class Agent():
         ======
             experiences (Tuple[torch.Tensor]): tuple of (s, a, r, s', done) tuples 
             gamma (float): discount factor
+            beta (float): reliance of importance sampling weight on prioritization
         """
-        states, actions, rewards, next_states, dones = experiences
+        if self.prioritized_reply:
+            # Beta will reach 1 after 25,000 training steps (~325 episodes)
+            b = min(1.0, beta + self.learn_step * (1.0 - beta) / 25000)
+            self.learn_step += 1
+            states, actions, rewards, next_states, dones, probabilities, indices = experiences
+        else:
+            states, actions, rewards, next_states, dones = experiences
+
 
         # ---------------------------- update critic ---------------------------- #
         # Get predicted next-state actions and Q values from target models
@@ -95,8 +122,23 @@ class Agent():
         Q_targets_next = self.critic_target(next_states, actions_next)
         # Compute Q targets for current states (y_i)
         Q_targets = rewards + (gamma * Q_targets_next * (1 - dones))
+
         # Compute critic loss
         Q_expected = self.critic_local(states, actions)
+
+        if self.prioritized_reply:
+            # Compute and update new priorities
+            new_priorities = (abs(Q_expected - Q_targets) + 0.2).detach()
+            self.memory.update_priority(new_priorities, indices)
+
+            # Compute and apply importance sampling weights to TD Errors
+            ISweights = (((1 / len(self.memory)) * (1 / probabilities)) ** b)
+            max_ISweight = torch.max(ISweights)
+            ISweights /= max_ISweight
+            Q_targets *= ISweights
+            Q_expected *= ISweights
+
+        # Compute critic loss
         critic_loss = F.mse_loss(Q_expected, Q_targets)
         # Minimize the loss
         self.critic_optimizer.zero_grad()

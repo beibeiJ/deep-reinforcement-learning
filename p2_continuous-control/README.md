@@ -86,3 +86,22 @@ Then, place the file in the `p2_continuous-control/` folder in the DRLND GitHub 
 
 (_For AWS_) If you'd like to train the agent on AWS (and have not [enabled a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md)), then please use [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Crawler/Crawler_Linux_NoVis.zip) to obtain the "headless" version of the environment.  You will **not** be able to watch the agent without enabling a virtual screen, but you will be able to train the agent.  (_To watch the agent, you should follow the instructions to [enable a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md), and then download the environment for the **Linux** operating system above._)
 
+
+### Solutions
+#### File description
+- ddpg_agent_per.py: `Agent` class used in the environment (option as argument to use Prioritized Experience Reply or not)
+- model.py: code containing the Q-Network used as the function approximator by the agent
+- oun_noise.py: code containing Ornstein-Uhlenbeck process
+- reply_memory.py: code containing the reply buffer memory
+- prioritized_memory.py and SumTree.py: code containing the Prioritized Experience Reply implementation with SumTree 
+- *.pth: saved model weights for different models (Actor and Critic)
+- Continuous_Control.ipynb: explore the unity environment
+- Continuous_Control_Multi_Agent_solution.ipynb: notebook containing the solution for multi-agent continuous control, the training processes and the results
+- Crawler.ipynb: notebook containing the code for teaching a creature with four legs to walk forward without falling (see above optional challenge, not solved yet)
+- Report/Report.md: Markdown file converted from Continuous_Control_solution.ipynb
+
+#### Results
+see [Continuous_Control_Multi_Agent_solution.ipynb](https://github.com/beibeiJ/deep-reinforcement-learning/blob/master/p2_continuous-control/Continuous_Control_Multi_Agent_solution.ipynb) or [Report/Report.md](https://github.com/beibeiJ/deep-reinforcement-learning/blob/master/p2_continuous-control/Report/Report.md)
+
+
+

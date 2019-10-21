@@ -7,8 +7,9 @@ from SumTree import SumTree
 
 """
     Prioritized experience reply buffer
-    Get from https://github.com/austinsilveria/Banana-Collection-DQN/blob/master/Banana_DoubleDQN_PER.py which was adjusted from original source: https://jaromiru.com/2016/11/07/lets-make-a-dqn-double-learning-and-prioritized-experience-replay/
+    Adjusted from https://github.com/austinsilveria/Banana-Collection-DQN/blob/master/Banana_DoubleDQN_PER.py which was adjusted from original source: https://jaromiru.com/2016/11/07/lets-make-a-dqn-double-learning-and-prioritized-experience-replay/
 """
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class PreReplayBuffer:

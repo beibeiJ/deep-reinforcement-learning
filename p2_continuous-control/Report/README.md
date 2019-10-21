@@ -125,7 +125,41 @@ We have just learned Deep Deterministic Policy Gradients (DDPG), a actor-critic 
     $$\theta_{target} = \tau \cdot \theta_{local} + (1 - \tau)\cdot \theta_{target} $$
     Here, $\tau \leq 1$ and $\theta_{target}$ can be for either actor target network or critic target network. 
 
+#### Requirement
+
+To view the architect of neural networks, please install python package `torchviz`. 
+##### Mac Os
+```shell
+brew install graphviz 
+conda install python-graphviz
+pip install torchviz
+```
+
+###### Linux
+- Ubuntu
+```shell
+apt-get install graphviz 
+```
+- RedHat or RedHat based
+```shell
+yum install graphviz 
+```
+then
+```shell
+conda install python-graphviz
+pip install torchviz
+```
+
+###### Windows
+Please go to https://graphviz.gitlab.io/_pages/Download/Download_windows.html and install `graphviz` according to the guidance. Then
+```shell
+conda install python-graphviz
+pip install torchviz
+```
+
 #### Define DDPG run pipeline
+
+To run the following commands, please make sure you have `torchviz` installed. If not, please check the above requirements.
 
 
 ```python

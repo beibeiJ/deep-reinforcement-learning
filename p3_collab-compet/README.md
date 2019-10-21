@@ -60,3 +60,22 @@ You need only select the environment that matches your operating system:
 Then, place the file in the `p3_collab-compet/` folder in the DRLND GitHub repository, and unzip (or decompress) the file.  Next, open `Soccer.ipynb` and follow the instructions to learn how to use the Python API to control the agent.
 
 (_For AWS_) If you'd like to train the agents on AWS (and have not [enabled a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md)), then please use [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Soccer/Soccer_Linux_NoVis.zip) to obtain the "headless" version of the environment.  You will **not** be able to watch the agents without enabling a virtual screen, but you will be able to train the agents.  (_To watch the agents, you should follow the instructions to [enable a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md), and then download the environment for the **Linux** operating system above._)
+
+
+### Solutions
+#### File description
+- ddpg_agent_per.py: `Agent` class used in the environment (option as argument to use Prioritized Experience Reply or not)
+- model.py: code containing the Q-Network used as the function approximator by the agent
+- oun_noise.py: code containing Ornstein-Uhlenbeck process
+- reply_memory.py: code containing the reply buffer memory
+- prioritized_memory.py and SumTree.py: code containing the Prioritized Experience Reply implementation with SumTree 
+- *.pth: saved model weights for different models (Actor and Critic)
+- Tennis.ipynb: explore the unity environment
+- Tennis_Solution.ipynb: notebook containing the solution for multi-agent tennis game, the training processes and the results
+- Soccer.ipynb: notebook containing the code for training a team of agents to play soccer (see above optional challenge, not solved yet)
+- Report/Report.md: Markdown file converted from Tennis_Solution.ipynb
+
+#### Results
+see [Tennis_Solution.ipynb](https://github.com/beibeiJ/deep-reinforcement-learning/blob/master/p3_collab-compet/Tennis_Solution.ipynb) or [Report/Report.md](https://github.com/beibeiJ/deep-reinforcement-learning/blob/master/p3_collab-compet/Report/Report.md)
+
+

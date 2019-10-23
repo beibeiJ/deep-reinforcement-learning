@@ -63,6 +63,37 @@ Then, place the file in the `p3_collab-compet/` folder in the DRLND GitHub repos
 
 
 ### Solutions
+#### Requirement
+To view the architect of neural networks, please install python package `torchviz`. 
+##### Mac Os
+```shell script
+brew install graphviz 
+conda install python-graphviz
+pip install torchviz
+```
+
+###### Linux
+- Ubuntu
+```shell script
+apt-get install graphviz 
+```
+- RedHat or RedHat based
+```shell script
+yum install graphviz 
+```
+then
+```shell script
+conda install python-graphviz
+pip install torchviz
+```
+
+###### Windows
+Please go to https://graphviz.gitlab.io/_pages/Download/Download_windows.html and install `graphviz` according to the guidance. Then
+```shell script
+conda install python-graphviz
+pip install torchviz
+```
+
 #### File description
 - ddpg_agent_per.py: `Agent` class used in the environment (option as argument to use Prioritized Experience Reply or not)
 - model.py: code containing the Q-Network used as the function approximator by the agent
@@ -76,6 +107,6 @@ Then, place the file in the `p3_collab-compet/` folder in the DRLND GitHub repos
 - Report/Report.md: Markdown file converted from Tennis_Solution.ipynb
 
 #### Results
-see [Tennis_Solution.ipynb](https://github.com/beibeiJ/deep-reinforcement-learning/blob/master/p3_collab-compet/Tennis_Solution.ipynb) or [Report/Report.md](https://github.com/beibeiJ/deep-reinforcement-learning/blob/master/p3_collab-compet/Report/Report.md)
+see [Tennis_Solution.ipynb](https://github.com/beibeiJ/deep-reinforcement-learning/blob/master/p3_collab-compet/Tennis_Solution.ipynb) or [Report/README.md](https://github.com/beibeiJ/deep-reinforcement-learning/blob/master/p3_collab-compet/Report/README.md)
 
 

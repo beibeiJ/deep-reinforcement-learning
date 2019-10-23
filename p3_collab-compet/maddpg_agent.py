@@ -145,6 +145,9 @@ class MADDPGAgent():
         torch.nn.utils.clip_grad_norm_(self.critic_local.parameters(), 1) # Added because I got converge problems
         # then I found in adaptationio's solution (https://github.com/adaptationio/DDPG-Continuous-Control), he added this.
         # Here to see the purpose of doing so: https://discuss.pytorch.org/t/about-torch-nn-utils-clip-grad-norm/13873
+
+        # for param in self.critic_local.parameters():
+        #     param.grad.data.clamp_(-1, 1)
         self.critic_optimizer.step()
 
         # ---------------------------- update actor ---------------------------- #
@@ -159,6 +162,8 @@ class MADDPGAgent():
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
         torch.nn.utils.clip_grad_norm_(self.actor_local.parameters(), 1) # Added because I got converge problems
+        # for param in self.critic_local.parameters():
+        #     param.grad.data.clamp_(-1, 1)
         self.actor_optimizer.step()
 
         # ----------------------- update target networks ----------------------- #

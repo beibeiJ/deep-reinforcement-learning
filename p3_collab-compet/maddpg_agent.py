@@ -26,7 +26,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 adjusted from 
 https://github.com/udacity/deep-reinforcement-learning/tree/master/ddpg-pendulum 
 and 
-https://github.com/katnoria/unityml-tennis/blob/a056fb897200f97d63bef15fda0218ae7941b573
+https://github.com/katnoria/unityml-tennis/
 """
 
 def flatten(tensor):
@@ -83,7 +83,7 @@ class MADDPGAgent():
         self.actor_local.eval()
         with torch.no_grad():
             action = self.actor_local(state).cpu().data.numpy()
-        # self.actor_local.train()
+        self.actor_local.train()
         # add noise if true
         if add_noise:
             action += self.noise.sample()
@@ -158,7 +158,7 @@ class MADDPGAgent():
         # Minimize the loss
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
-        # torch.nn.utils.clip_grad_norm_(self.actor_local.parameters(), 1) # Added because I got converge problems
+        torch.nn.utils.clip_grad_norm_(self.actor_local.parameters(), 1) # Added because I got converge problems
         self.actor_optimizer.step()
 
         # ----------------------- update target networks ----------------------- #

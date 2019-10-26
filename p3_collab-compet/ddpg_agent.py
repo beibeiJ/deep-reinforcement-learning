@@ -9,15 +9,16 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
+
 BUFFER_SIZE = int(1e6)  # replay buffer size
-BATCH_SIZE = 1024       # minibatch size
-GAMMA = 0.99            # discount factor
-TAU = 1e-3              # for soft update of target parameters
-LR_ACTOR = 1e-4         # learning rate of the actor 
-LR_CRITIC = 3e-4        # learning rate of the critic
-UPDATE_EVERY = 10       # how often to update the network
-# WEIGHT_DECAY = 0        # L2 weight decay
-LEAKINESS = 0.01        # leaky in Leaky ReLu
+BATCH_SIZE = 512        # minibatch size
+GAMMA = 0.95            # discount factor
+TAU = 1e-2              # for soft update of target parameters
+LR_ACTOR = 1e-3         # learning rate of the actor
+LR_CRITIC = 1e-3        # learning rate of the critic
+UPDATE_EVERY = 1        # how often to update the network
+WEIGHT_DECAY = 0        # L2 weight decay
+# LEAKINESS = 0.01        # leaky in Leaky ReLu
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -46,15 +47,19 @@ class Agent():
         random.seed(random_seed)
 
         # Actor Network (w/ Target Network)
-        self.actor_local = Actor(state_size, action_size, seed=random_seed, leak=LEAKINESS).to(device)
-        self.actor_target = Actor(state_size, action_size, seed=random_seed, leak=LEAKINESS).to(device)
+        # self.actor_local = Actor(state_size, action_size, seed=random_seed, leak=LEAKINESS).to(device)
+        # self.actor_target = Actor(state_size, action_size, seed=random_seed, leak=LEAKINESS).to(device)
+        self.actor_local = Actor(state_size, action_size, seed=random_seed).to(device)
+        self.actor_target = Actor(state_size, action_size, seed=random_seed).to(device)
         self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=LR_ACTOR)
 
         # Critic Network (w/ Target Network)
-        self.critic_local = Critic(state_size, action_size, seed=random_seed, leak=LEAKINESS).to(device)
-        self.critic_target = Critic(state_size, action_size, seed=random_seed, leak=LEAKINESS).to(device)
-        # self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)
-        self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC)
+        # self.critic_local = Critic(state_size, action_size, seed=random_seed, leak=LEAKINESS).to(device)
+        # self.critic_target = Critic(state_size, action_size, seed=random_seed, leak=LEAKINESS).to(device)
+        self.critic_local = Critic(state_size, action_size, seed=random_seed).to(device)
+        self.critic_target = Critic(state_size, action_size, seed=random_seed).to(device)
+        self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)
+        # self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC)
 
         # initialize targets same as original networks
         self.hard_update(self.actor_target, self.actor_local)
@@ -74,14 +79,16 @@ class Agent():
     def step(self, states, actions, rewards, next_states, dones):
         """Save experience in replay memory, and use random sample from buffer to learn."""
         # Save experience / reward
-        # for state, action, reward, next_state, done in zip(states, actions, rewards, next_states, dones):
-        #     self.memory.add(state, action, reward, next_state, done)
-        self.memory.add(states, actions, rewards, next_states, dones)
+        for state, action, reward, next_state, done in zip(states, actions, rewards, next_states, dones):
+            self.memory.add(state, action, reward, next_state, done)
+        # self.memory.add(states, actions, rewards, next_states, dones)
 
         # Learn, if enough samples are available in memory
         self.t_step = self.t_step + 1
 
         if (len(self.memory) > BATCH_SIZE) and (self.t_step % UPDATE_EVERY == 0):
+            # experiences = self.memory.sample()
+            # self.learn(experiences, GAMMA)
             for _ in range(10):
                 experiences = self.memory.sample()
                 self.learn(experiences, GAMMA)
@@ -147,6 +154,7 @@ class Agent():
         # Minimize the loss
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.actor_local.parameters(), 1)  # Added because I got converge problems
         self.actor_optimizer.step()
 
         # ----------------------- update target networks ----------------------- #
